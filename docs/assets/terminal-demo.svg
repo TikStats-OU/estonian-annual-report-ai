@@ -32,7 +32,7 @@
   <rect width="1" height="1" fill="#081521" opacity="0"><animate id="loop" attributeName="x" values="0;0" dur="14s" begin="0s;loop.begin+14s"/></rect>
 
   <g class="t" transform="translate(32 80)">
-    <text class="dim">$ estonian-annual-report-ai-mcp   # 33 tools, one company per process</text>
+    <text class="dim">$ estonian-annual-report-ai-mcp   # 35 tools, one company per process</text>
 
     <g transform="translate(0 40)">
       <text class="you">you ›</text>

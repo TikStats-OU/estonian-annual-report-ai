@@ -36,7 +36,7 @@
   <g transform="translate(64 284)">
     <rect class="chip" width="132" height="36" rx="18"/><text class="chiptext" x="66" y="23" text-anchor="middle">Runs locally</text>
     <rect class="chip" x="146" width="148" height="36" rx="18"/><text class="chiptext" x="220" y="23" text-anchor="middle">Decimal money</text>
-    <rect class="chip" x="308" width="132" height="36" rx="18"/><text class="chiptext" x="374" y="23" text-anchor="middle">33 MCP tools</text>
+    <rect class="chip" x="308" width="132" height="36" rx="18"/><text class="chiptext" x="374" y="23" text-anchor="middle">35 MCP tools</text>
     <rect class="chip" x="454" width="120" height="36" rx="18"/><text class="chiptext" x="514" y="23" text-anchor="middle">Apache-2.0</text>
   </g>
 

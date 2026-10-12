@@ -32,7 +32,7 @@
       <path d="M0-28V28M-28 0H28M-20-20 20 20M-20 20 20-20"/>
     </g>
     <text class="name" x="50" y="128">Claude</text>
-    <text class="cmd" x="50" y="148">claude mcp add …</text>
+    <text class="cmd" x="50" y="148">claude mcp add</text>
   </g>
 
   <!-- FlaiReport in the middle -->
@@ -54,7 +54,7 @@
       <animate attributeName="stroke-opacity" values="1;1;0;0" keyTimes="0;.5;.5;1" dur="1.1s" repeatCount="indefinite"/>
     </path>
     <text class="name" x="50" y="128">Codex</text>
-    <text class="cmd" x="50" y="148">codex mcp add …</text>
+    <text class="cmd" x="50" y="148">codex mcp add</text>
   </g>
 
   <g transform="translate(441 214)">

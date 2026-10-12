@@ -222,14 +222,65 @@ class CommandLineTests(unittest.TestCase):
                 ESTONIAN_REPORT_YEAR="2025",
             )
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("33 MCP tools", result.stdout)
+        self.assertRegex(result.stdout, r"ready: \d+ MCP tools")
         self.assertIn("2025-01-01 to 2025-12-31", result.stdout)
+
+    def test_check_without_a_company_explains_the_next_step(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            result = self._run(
+                "--check",
+                ESTONIAN_REPORT_DATA_DIR=temporary,
+                ESTONIAN_REPORT_COMPANY_NAME="",
+                ESTONIAN_REPORT_REGISTRY_CODE="",
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("not chosen yet", result.stdout)
 
     def test_check_rejects_a_malformed_year(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             result = self._run("--check", ESTONIAN_REPORT_DATA_DIR=temporary, ESTONIAN_REPORT_YEAR="next")
         self.assertEqual(result.returncode, 2)
         self.assertIn("four-digit year", result.stderr)
+
+
+class CompanySetupTests(unittest.TestCase):
+    def test_company_chosen_in_chat_is_remembered_for_the_next_session(self) -> None:
+        import os
+        from unittest import mock
+
+        from estonian_annual_report_ai import mcp_server as server
+
+        saved_instance = server._workflow_instance
+        env = {key: value for key, value in os.environ.items() if not key.startswith("ESTONIAN_REPORT_")}
+        with tempfile.TemporaryDirectory() as temporary, mock.patch.dict(
+            os.environ, {**env, "ESTONIAN_REPORT_DATA_DIR": temporary}, clear=True
+        ):
+            try:
+                server._workflow_instance = None
+                self.assertFalse(server.get_company()["configured"])
+
+                chosen = server.set_company(
+                    server.CompanyInput(company_name="Sample Shop OÜ", registry_code="SAMPLE-1", year=2025)
+                )
+                self.assertTrue(chosen["configured"])
+                self.assertEqual(chosen["period_end"], "2025-12-31")
+                profile = Path(temporary) / "company.json"
+                self.assertEqual(profile.stat().st_mode & 0o777, 0o600)
+
+                server._workflow_instance = None  # simulate a new session
+                reloaded = server.get_company()
+                self.assertTrue(reloaded["configured"])
+                self.assertEqual(reloaded["registry_code"], "SAMPLE-1")
+            finally:
+                server._workflow_instance = saved_instance
+
+    def test_invalid_registry_code_is_rejected(self) -> None:
+        from pydantic import ValidationError
+
+        from estonian_annual_report_ai import mcp_server as server
+
+        with self.assertRaises(ValidationError):
+            server.CompanyInput(company_name="Sample Shop OÜ", registry_code="../escape", year=2025)
 
 
 if __name__ == "__main__":

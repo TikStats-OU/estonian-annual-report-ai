@@ -1,9 +1,5 @@
 <p align="center">
-  <a href="#connect-in-about-2-minutes"><img src="docs/assets/connect.svg" alt="Connect FlaiReport to Claude or Codex in about 2 minutes" width="100%"></a>
-</p>
-
-<p align="center">
-  <img src="docs/assets/hero.svg" alt="FlaiReport: bank, Stripe, and invoice files flow into a balanced double-entry ledger" width="100%">
+  <a href="#connect-in-3-steps"><img src="docs/assets/connect.svg" alt="Connect FlaiReport to Claude or Codex in about 2 minutes" width="100%"></a>
 </p>
 
 <p align="center">
@@ -11,6 +7,64 @@
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-55c2a3"></a>
   <img alt="Python 3.12+" src="https://img.shields.io/badge/python-3.12%2B-102235">
   <img alt="MCP over stdio" src="https://img.shields.io/badge/MCP-local%20stdio-f5c46b">
+</p>
+
+## Connect in 3 steps
+
+No coding needed. Copy, paste, done.
+
+### Step 1. Install uv (30 seconds)
+
+uv is a small free tool that downloads and runs FlaiReport for you. Already have it? Skip to step 2.
+
+**Mac or Linux:** open the Terminal app and paste:
+
+```sh
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+**Windows:** open PowerShell and paste:
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+Then close the window and open a new one.
+
+### Step 2. Add FlaiReport to your app (1 minute)
+
+Copy the box for the app you use and paste it into the terminal. The first line downloads FlaiReport (about 10 seconds), the second line connects it.
+
+**Claude Code**
+
+```sh
+uvx --from git+https://github.com/TikStats-OU/estonian-annual-report-ai flaireport --check
+claude mcp add flaireport --scope user -- uvx --from git+https://github.com/TikStats-OU/estonian-annual-report-ai flaireport
+```
+
+**Codex**
+
+```sh
+uvx --from git+https://github.com/TikStats-OU/estonian-annual-report-ai flaireport --check
+codex mcp add flaireport -- uvx --from git+https://github.com/TikStats-OU/estonian-annual-report-ai flaireport
+```
+
+**Claude Desktop:** [copy this snippet into Settings → Developer → Edit Config](docs/mcp-clients.md#claude-desktop-and-other-json-configured-clients), then restart the app.
+
+### Step 3. Say hi (30 seconds)
+
+Open a new chat in Claude or Codex and type, with your own details:
+
+> Set up FlaiReport for my company **Your Company OÜ**, registry code **12345678**, year **2025**. Which documents do you need from me?
+
+That's it. FlaiReport remembers your company, and your files never leave your computer.
+
+<sub>Stuck? See [troubleshooting](docs/mcp-clients.md#troubleshooting). Other apps, Docker, and advanced settings are in [docs/mcp-clients.md](docs/mcp-clients.md).</sub>
+
+---
+
+<p align="center">
+  <img src="docs/assets/hero.svg" alt="FlaiReport: bank, Stripe, and invoice files flow into a balanced double-entry ledger" width="100%">
 </p>
 
 ```text
@@ -30,84 +84,6 @@ invoice.pdf ─┘    trace    approve   Dr = Cr   to the cent   JSON · XLSX ·
 > FlaiReport prepares drafts for human review. It does not give legal or tax advice, and it never signs or files anything. You still review the draft and file it in the e-Business Register yourself.
 
 ---
-
-## Connect in about 2 minutes
-
-You need [uv](https://docs.astral.sh/uv/) once. It also downloads Python 3.12+ for you if your computer has an older one.
-
-```sh
-curl -LsSf https://astral.sh/uv/install.sh | sh        # macOS / Linux (or: brew install uv)
-```
-
-```powershell
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"   # Windows
-```
-
-**Step 1. Download and check (10–60 seconds the first time).**
-
-```sh
-uvx --from git+https://github.com/TikStats-OU/estonian-annual-report-ai estonian-annual-report-ai-mcp --check
-```
-
-You should see `FlaiReport … is ready: 33 MCP tools.` This also caches everything, so the client starts the server instantly later.
-
-**Step 2. Add it to your client.** Replace the company name, registry code, and year with your own.
-
-<details open>
-<summary><b>Claude Code</b></summary>
-
-```sh
-claude mcp add flaireport --scope user \
-  -e ESTONIAN_REPORT_COMPANY_NAME="Your Company OÜ" \
-  -e ESTONIAN_REPORT_REGISTRY_CODE=12345678 \
-  -e ESTONIAN_REPORT_YEAR=2025 \
-  -- uvx --from git+https://github.com/TikStats-OU/estonian-annual-report-ai estonian-annual-report-ai-mcp
-```
-
-Check with `claude mcp list`; it should show `flaireport … ✔ Connected`.
-</details>
-
-<details open>
-<summary><b>Codex</b> (CLI, IDE extension, and app share one config)</summary>
-
-```sh
-codex mcp add flaireport \
-  --env ESTONIAN_REPORT_COMPANY_NAME="Your Company OÜ" \
-  --env ESTONIAN_REPORT_REGISTRY_CODE=12345678 \
-  --env ESTONIAN_REPORT_YEAR=2025 \
-  -- uvx --from git+https://github.com/TikStats-OU/estonian-annual-report-ai estonian-annual-report-ai-mcp
-```
-
-Check with `codex mcp list`. If you skipped step 1 and the first start times out, add `startup_timeout_sec = 60` under `[mcp_servers.flaireport]` in `~/.codex/config.toml`.
-</details>
-
-<details>
-<summary><b>Claude Desktop</b></summary>
-
-Open **Settings → Developer → Edit Config** and add the server to `claude_desktop_config.json`. Desktop apps do not always see your shell `PATH`, so use the full path that `which uvx` prints (on Windows: `where uvx`).
-
-```json
-{
-  "mcpServers": {
-    "flaireport": {
-      "command": "/full/path/to/uvx",
-      "args": ["--from", "git+https://github.com/TikStats-OU/estonian-annual-report-ai", "estonian-annual-report-ai-mcp"],
-      "env": {
-        "ESTONIAN_REPORT_COMPANY_NAME": "Your Company OÜ",
-        "ESTONIAN_REPORT_REGISTRY_CODE": "12345678",
-        "ESTONIAN_REPORT_YEAR": "2025"
-      }
-    }
-  }
-}
-```
-
-Restart Claude Desktop afterwards.
-</details>
-
-**Step 3. Try it.** Ask your client: *"Use FlaiReport to tell me which documents you need for the annual report."*
-
-Other MCP clients, Docker, `pipx`, and installing from a clone are covered in [docs/mcp-clients.md](docs/mcp-clients.md). Data is stored in `~/.local/share/estonian-annual-report-ai/data` unless you set `ESTONIAN_REPORT_DATA_DIR`.
 
 ## In plain words
 
@@ -178,10 +154,11 @@ The draft above is blocked on purpose: last year's closing equity has not been a
 
 ## MCP tools
 
-The server exposes 33 tools over local stdio.
+The server exposes 35 tools over local stdio.
 
 | Area | Tools |
 | --- | --- |
+| Company | `get_company`, `set_company` |
 | Import & review | `import_documents`, `parse_bank_statements`, `normalize_transactions`, `classify_transactions`, `get_unclassified_transactions`, `approve_classification`, `reconcile_accounts` |
 | Statements | `generate_financial_statements`, `generate_annual_report`, `validate_annual_report`, `validate_pre_filing`, `get_missing_information` |
 | Prior reports | `get_previous_report_candidates`, `approve_previous_report_value`, `get_fixed_asset_history` |

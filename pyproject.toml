@@ -37,6 +37,7 @@ Changelog = "https://github.com/TikStats-OU/estonian-annual-report-ai/blob/main/
 
 [project.scripts]
 estonian-annual-report-ai-mcp = "estonian_annual_report_ai.mcp_server:main"
+flaireport = "estonian_annual_report_ai.mcp_server:main"
 
 [project.optional-dependencies]
 # Kept so existing `pip install ".[mcp]"` commands keep working; the MCP SDK is now a core dependency.

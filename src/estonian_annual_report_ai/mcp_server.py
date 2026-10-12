@@ -2,6 +2,7 @@
 
 import argparse
 import asyncio
+import json
 import os
 import re
 import sys
@@ -52,17 +53,52 @@ from estonian_annual_report_ai.transactions import (
 )
 from mcp.server import MCPServer
 
-mcp = MCPServer("estonian-annual-report-ai")
+_INSTRUCTIONS = (
+    "FlaiReport prepares Estonian annual-report drafts from local files. "
+    "Start every session with get_company. If it reports configured=false, ask the user for the company name, "
+    "registry code, and reporting year, then call set_company. "
+    "Next, call get_missing_information and tell the user in plain words which documents to provide. "
+    "Never invent figures: ambiguous items must be approved by the user."
+)
+mcp = MCPServer("estonian-annual-report-ai", instructions=_INSTRUCTIONS)
 _LOCK = threading.RLock()
 _DEFAULT_DATA_DIR = Path.home() / ".local" / "share" / "estonian-annual-report-ai" / "data"
 _workflow_instance: AccountingWorkflow | None = None
 
 
+_EXAMPLE_COMPANY = ("Example Company OÜ", "EXAMPLE")
+
+
+def _data_dir() -> Path:
+    return Path(os.environ.get("ESTONIAN_REPORT_DATA_DIR", _DEFAULT_DATA_DIR)).expanduser()
+
+
 def _company_workspace(registry_code: str) -> Path:
     if not re.fullmatch(r"[A-Za-z0-9_-]{1,64}", registry_code):
         raise ValueError("Company registry code must contain only letters, digits, underscores, or hyphens.")
-    data_dir = Path(os.environ.get("ESTONIAN_REPORT_DATA_DIR", _DEFAULT_DATA_DIR)).expanduser()
-    return data_dir / "companies" / registry_code
+    return _data_dir() / "companies" / registry_code
+
+
+def _profile_path() -> Path:
+    return _data_dir() / "company.json"
+
+
+def _saved_profile() -> dict[str, str]:
+    """Company chosen earlier with set_company; environment variables take precedence."""
+    path = _profile_path()
+    if not path.is_file():
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError(f"Saved company profile is unreadable: {path}") from exc
+    return {key: str(data[key]) for key in ("company_name", "registry_code", "year") if data.get(key)}
+
+
+def _validate_year(raw_year: str) -> int:
+    if not re.fullmatch(r"\d{4}", raw_year.strip()):
+        raise ValueError("ESTONIAN_REPORT_YEAR must be a four-digit year, for example 2025.")
+    return int(raw_year)
 
 
 def _configured_workflow() -> AccountingWorkflow:
@@ -70,13 +106,14 @@ def _configured_workflow() -> AccountingWorkflow:
     global _workflow_instance
     with _LOCK:
         if _workflow_instance is None:
-            name = os.environ.get("ESTONIAN_REPORT_COMPANY_NAME", "Example Company OÜ")
-            registry_code = os.environ.get("ESTONIAN_REPORT_REGISTRY_CODE", "EXAMPLE")
+            profile = _saved_profile()
+            name = os.environ.get("ESTONIAN_REPORT_COMPANY_NAME") or profile.get("company_name") or _EXAMPLE_COMPANY[0]
+            registry_code = (
+                os.environ.get("ESTONIAN_REPORT_REGISTRY_CODE") or profile.get("registry_code") or _EXAMPLE_COMPANY[1]
+            )
             # Annual reports cover a finished year, so default to the previous calendar year.
-            raw_year = os.environ.get("ESTONIAN_REPORT_YEAR", str(date.today().year - 1))
-            if not re.fullmatch(r"\d{4}", raw_year.strip()):
-                raise ValueError("ESTONIAN_REPORT_YEAR must be a four-digit year, for example 2025.")
-            year = int(raw_year)
+            raw_year = os.environ.get("ESTONIAN_REPORT_YEAR") or profile.get("year") or str(date.today().year - 1)
+            year = _validate_year(raw_year)
             period_start = date.fromisoformat(os.environ.get("ESTONIAN_REPORT_PERIOD_START", f"{year}-01-01"))
             period_end = date.fromisoformat(os.environ.get("ESTONIAN_REPORT_PERIOD_END", f"{year}-12-31"))
             if period_end < period_start:
@@ -247,6 +284,64 @@ def _registry_for_company(registry_code: str) -> EvidenceRegistry:
     workspace = _company_workspace(registry_code)
     workspace.mkdir(parents=True, exist_ok=True, mode=0o700)
     return EvidenceRegistry(workspace / "evidence-registry.json")
+
+
+class CompanyInput(BaseModel):
+    company_name: str = Field(min_length=1, max_length=200)
+    registry_code: str = Field(pattern=r"^[A-Za-z0-9_-]{1,64}$")
+    year: int = Field(ge=2000, le=2100)
+
+
+def _company_summary(workflow: AccountingWorkflow) -> dict[str, object]:
+    configured = (workflow.company_name, workflow.registry_code) != _EXAMPLE_COMPANY
+    return {
+        "configured": configured,
+        "company_name": workflow.company_name,
+        "registry_code": workflow.registry_code,
+        "period_start": workflow.period_start.isoformat(),
+        "period_end": workflow.period_end.isoformat(),
+        "data_directory": str(_company_workspace(workflow.registry_code)),
+        "next_step": (
+            "Call get_missing_information and tell the user which documents to provide."
+            if configured
+            else "Ask the user for the company name, registry code, and reporting year, then call set_company."
+        ),
+    }
+
+
+@mcp.tool()
+def get_company() -> dict[str, object]:
+    """Show which company and reporting year this session works on. Call this first."""
+    with _LOCK:
+        return _company_summary(_configured_workflow())
+
+
+@mcp.tool()
+def set_company(company: CompanyInput) -> dict[str, object]:
+    """Choose the company and reporting year; remembered for the next session.
+
+    Environment variables in the MCP client configuration, if set, still take
+    precedence when the server starts.
+    """
+    global _workflow_instance
+    with _LOCK:
+        workspace = _company_workspace(company.registry_code)
+        path = _profile_path()
+        path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        temporary = path.with_name(f".{path.name}.tmp")
+        temporary.write_text(json.dumps(company.model_dump(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        os.chmod(temporary, 0o600)
+        os.replace(temporary, path)
+        workspace.mkdir(parents=True, exist_ok=True, mode=0o700)
+        _workflow_instance = AccountingWorkflow(
+            company_name=company.company_name,
+            registry_code=company.registry_code,
+            period_start=date(company.year, 1, 1),
+            period_end=date(company.year, 12, 31),
+            rules_path=workspace / "classification-rules.json",
+            evidence_registry_path=workspace / "evidence-registry.json",
+        )
+        return _company_summary(_workflow_instance)
 
 
 @mcp.tool()
@@ -765,9 +860,13 @@ def _check() -> int:
     workflow = _configured_workflow()
     tool_count = len(asyncio.run(mcp.list_tools()))
     print(f"FlaiReport {_package_version()} is ready: {tool_count} MCP tools.")
-    print(f"Company: {workflow.company_name} ({workflow.registry_code})")
-    print(f"Period: {workflow.period_start.isoformat()} to {workflow.period_end.isoformat()}")
-    print(f"Data directory: {_company_workspace(workflow.registry_code)}")
+    if _company_summary(workflow)["configured"]:
+        print(f"Company: {workflow.company_name} ({workflow.registry_code})")
+        print(f"Period: {workflow.period_start.isoformat()} to {workflow.period_end.isoformat()}")
+        print(f"Data directory: {_company_workspace(workflow.registry_code)}")
+    else:
+        print("Company: not chosen yet. After connecting, tell your assistant your company name,")
+        print("registry code, and year, and it will set FlaiReport up for you.")
     return 0
 
 

@@ -40,7 +40,9 @@ Add parsers under `documents`, keep accounting arithmetic in `accounting`, and h
 
 ## MCP surface
 
-The server currently exposes tools only; it has no MCP resources or prompts. The 33 tools are grouped by responsibility:
+The server currently exposes tools only; it has no MCP resources or prompts. The 35 tools are grouped by responsibility:
+
+- Company: `get_company`, `set_company`.
 
 - Import and transaction workflow: `import_documents`, `parse_bank_statements`, `normalize_transactions`, `classify_transactions`, `get_unclassified_transactions`, `approve_classification`, `reconcile_accounts`.
 - Statements and readiness: `generate_financial_statements`, `generate_annual_report`, `validate_annual_report`, `validate_pre_filing`, `get_missing_information`.

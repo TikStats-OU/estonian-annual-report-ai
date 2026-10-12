@@ -3,13 +3,15 @@
 ## Unreleased
 
 ### Added
-- Local stdio MCP server with 33 tools for document import, review, reconciliation, evidence tracking, and review-only drafts.
+- Local stdio MCP server with 35 tools for document import, review, reconciliation, evidence tracking, and review-only drafts.
 - Stripe report import and three-way reconciliation (Balance Summary, Fees, itemized activity, bank payouts).
 - Evidence registry, materiality-based decision engine, and a configurable pre-filing gate.
 - Apache-2.0 license and NOTICE.
 - Animated README illustrations and a plain-language overview.
-- Two-minute setup for Claude Code, Codex, and Claude Desktop via `uvx`, with an animated connection banner.
+- Three-step setup for Claude Code, Codex, and Claude Desktop via `uvx`, with an animated connection banner.
 - `--check` and `--version` options: validate the configuration and pre-download everything before a client starts the server.
+- `get_company` and `set_company` tools: choose the company in chat and have it remembered, so connecting needs no settings. Server instructions tell the assistant to start there.
+- Shorter `flaireport` command alias.
 
 ### Fixed
 - Stripe fee amounts exported with many trailing zeros (`66.280000000000000000`) were ignored, so fee reconciliation always failed.
