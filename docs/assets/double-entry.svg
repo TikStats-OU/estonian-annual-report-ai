@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="330" viewBox="0 0 1000 330" role="img" aria-labelledby="title desc">
+  <title id="title">Double-entry bookkeeping in one picture</title>
+  <desc id="desc">Three synthetic transactions each appear on both sides of the ledger. The debit and credit totals grow together and end equal at 125 euros.</desc>
+  <defs>
+    <style>
+      .h { fill: #f3f7fa; font: 700 20px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .hs { fill: #8fa6b6; font: 14px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .event { fill: #f5c46b; font: 600 16px system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .row { fill: #d6e2ea; font: 500 16px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .total { fill: #f3f7fa; font: 700 18px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .ok { fill: #081521; font: 700 16px system-ui, -apple-system, "Segoe UI", sans-serif; }
+    </style>
+  </defs>
+  <rect width="1000" height="330" rx="22" fill="#081521"/>
+
+  <!-- Invisible master clock: everything below starts relative to it and the cycle repeats every 11 s -->
+  <rect width="1" height="1" fill="#081521" opacity="0"><animate id="loop" attributeName="x" values="0;0" dur="11s" begin="0s;loop.begin+11s"/></rect>
+
+  <text class="h" x="40" y="48">Every euro is written twice</text>
+  <text class="hs" x="40" y="72">Once where it went (debit) and once where it came from (credit). If the two sides differ, something is missing.</text>
+
+  <!-- Event captions on the left -->
+  <g transform="translate(40 128)">
+    <text class="event" opacity="0">1 · A customer pays €100
+      <animate attributeName="opacity" values="0;1;1;.35" keyTimes="0;.1;.8;1" dur="2.5s" begin="loop.begin+.5s" fill="freeze"/>
+      <set attributeName="opacity" to="0" begin="loop.begin"/></text>
+    <text class="event" y="48" opacity="0">2 · Hosting bill €20
+      <animate attributeName="opacity" values="0;1;1;.35" keyTimes="0;.1;.8;1" dur="2.5s" begin="loop.begin+3s" fill="freeze"/>
+      <set attributeName="opacity" to="0" begin="loop.begin"/></text>
+    <text class="event" y="96" opacity="0">3 · Card fee €5
+      <animate attributeName="opacity" values="0;1;1;.35" keyTimes="0;.1;.8;1" dur="2.5s" begin="loop.begin+5.5s" fill="freeze"/>
+      <set attributeName="opacity" to="0" begin="loop.begin"/></text>
+  </g>
+
+  <!-- Two ledger columns -->
+  <g transform="translate(380 100)">
+    <rect width="270" height="190" rx="14" fill="#102235" stroke="#2b4a5f" stroke-width="2"/>
+    <rect x="300" width="270" height="190" rx="14" fill="#102235" stroke="#2b4a5f" stroke-width="2"/>
+    <text class="hs" x="18" y="26">DEBIT · where it went</text>
+    <text class="hs" x="318" y="26">CREDIT · where it came from</text>
+
+    <g class="row">
+      <g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+.9s"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+        <text x="18" y="62">Bank</text><text x="252" y="62" text-anchor="end">100</text>
+        <text x="318" y="62">Sales</text><text x="552" y="62" text-anchor="end">100</text></g>
+      <g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+3.4s"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+        <text x="18" y="92">Hosting</text><text x="252" y="92" text-anchor="end">20</text>
+        <text x="318" y="92">Bank</text><text x="552" y="92" text-anchor="end">20</text></g>
+      <g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+5.9s"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+        <text x="18" y="122">Card fees</text><text x="252" y="122" text-anchor="end">5</text>
+        <text x="318" y="122">Bank</text><text x="552" y="122" text-anchor="end">5</text></g>
+    </g>
+    <path d="M14 146h242M314 146h242" stroke="#2b4a5f"/>
+    <g opacity="0"><set attributeName="opacity" to="1" begin="loop.begin+7.4s"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+      <text class="total" x="18" y="176">Total</text><text class="total" x="252" y="176" text-anchor="end">125</text>
+      <text class="total" x="318" y="176">Total</text><text class="total" x="552" y="176" text-anchor="end">125</text>
+    </g>
+  </g>
+
+  <g transform="translate(40 268)" opacity="0">
+    <set attributeName="opacity" to="1" begin="loop.begin+8.2s"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+    <rect width="300" height="36" rx="18" fill="#55c2a3"/>
+    <path d="m18 18 6 6 12-12" fill="none" stroke="#081521" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text class="ok" x="46" y="24">125 = 125 · the books balance</text>
+  </g>
+</svg>

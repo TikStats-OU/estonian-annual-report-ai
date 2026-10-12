@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220" viewBox="0 0 220 220" role="img" aria-labelledby="title desc">
+  <title id="title">FlaiReport logo</title>
+  <desc id="desc">A document outline with a balanced ledger motif, representing reviewable accounting reports.</desc>
+  <rect width="220" height="220" rx="44" fill="#081521"/>
+  <path d="M64 36h60l34 34v105a12 12 0 0 1-12 12H64a12 12 0 0 1-12-12V48a12 12 0 0 1 12-12Z" fill="#102235" stroke="#55c2a3" stroke-width="5"/>
+  <path d="M124 38v31a5 5 0 0 0 5 5h28" fill="none" stroke="#55c2a3" stroke-width="5"/>
+  <path d="M76 92h58M76 112h34" stroke="#a9bfce" stroke-width="7" stroke-linecap="round"/>
+  <path d="M83 151h18m10 0h18" stroke="#f5c46b" stroke-width="8" stroke-linecap="round"/>
+  <path d="m101 144 10 7-10 7" fill="none" stroke="#f5c46b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

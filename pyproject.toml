@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "estonian-annual-report-ai"
+version = "0.1.0"
+description = "FlaiReport: local-first MCP toolkit for reviewing Estonian company finances and annual-report drafts"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "TikStats OÜ" }]
+requires-python = ">=3.12"
+keywords = ["estonia", "annual-report", "accounting", "mcp", "model-context-protocol", "bookkeeping"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business :: Financial :: Accounting",
+]
+dependencies = [
+    "defusedxml>=0.7.1,<0.8",
+    "openpyxl>=3.1.5,<4",
+    "pdfplumber>=0.11.10,<0.12",
+    "reportlab>=5.0.1,<6",
+    "mcp>=2.0,<3",
+]
+
+[project.urls]
+Homepage = "https://github.com/TikStats-OU/estonian-annual-report-ai"
+Documentation = "https://github.com/TikStats-OU/estonian-annual-report-ai/tree/main/docs"
+Issues = "https://github.com/TikStats-OU/estonian-annual-report-ai/issues"
+Changelog = "https://github.com/TikStats-OU/estonian-annual-report-ai/blob/main/CHANGELOG.md"
+
+[project.scripts]
+estonian-annual-report-ai-mcp = "estonian_annual_report_ai.mcp_server:main"
+
+[project.optional-dependencies]
+# Kept so existing `pip install ".[mcp]"` commands keep working; the MCP SDK is now a core dependency.
+mcp = []
+ai = ["openai>=3.13,<4"]
+dev = ["build>=1.2,<2", "ruff>=0.14,<1", "pip-audit>=2.9,<3"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

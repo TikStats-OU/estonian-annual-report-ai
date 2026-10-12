@@ -1,0 +1,25 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+dist/
+build/
+*.egg-info/
+local-data/
+.DS_Store
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.sqlite
+*.sqlite3
+*.db
+.privacy-patterns
+.ruff_cache/
+# Default input folder mounted by compose.yaml; holds real documents.
+input/

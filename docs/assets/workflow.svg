@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="250" viewBox="0 0 1000 250" role="img" aria-labelledby="title desc">
+  <title id="title">From documents to a reviewable draft</title>
+  <desc id="desc">Five steps light up in turn: add documents, read and trace them, review with a person, reconcile in the ledger, and produce a draft for review.</desc>
+  <defs>
+    <style>
+      .box { fill: #102235; stroke: #2b4a5f; stroke-width: 2; }
+      .num { fill: #55c2a3; font: 700 14px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .label { fill: #f3f7fa; font: 700 19px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .sub { fill: #8fa6b6; font: 14px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .plain { fill: #b9d7cc; font: italic 14px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .arrow { stroke: #2b4a5f; stroke-width: 3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+  <rect width="1000" height="250" rx="22" fill="#081521"/>
+
+  <g transform="translate(28 40)">
+    <!-- Step cards; each highlight is a gold outline that fades in and out in turn -->
+    <g>
+      <rect class="box" width="168" height="104" rx="14"/>
+      <rect width="168" height="104" rx="14" fill="none" stroke="#f5c46b" stroke-width="3" opacity="0">
+        <animate id="loop" attributeName="opacity" values="0;1;1;0" dur="2s" begin="0s;loop.begin+10s"/>
+      </rect>
+      <text class="num" x="14" y="24">01</text>
+      <text class="label" x="84" y="56">Add files</text>
+      <text class="sub" x="84" y="80">bank · Stripe · invoices</text>
+    </g>
+    <path class="arrow" d="M176 52h18m-7-7 7 7-7 7"/>
+    <g transform="translate(202)">
+      <rect class="box" width="168" height="104" rx="14"/>
+      <rect width="168" height="104" rx="14" fill="none" stroke="#f5c46b" stroke-width="3" opacity="0">
+        <animate attributeName="opacity" values="0;1;1;0" dur="2s" begin="loop.begin+2s"/>
+      </rect>
+      <text class="num" x="14" y="24">02</text>
+      <text class="label" x="84" y="56">Read &amp; trace</text>
+      <text class="sub" x="84" y="80">page · row · SHA-256</text>
+    </g>
+    <path class="arrow" d="M378 52h18m-7-7 7 7-7 7"/>
+    <g transform="translate(404)">
+      <rect class="box" width="168" height="104" rx="14"/>
+      <rect width="168" height="104" rx="14" fill="none" stroke="#f5c46b" stroke-width="3" opacity="0">
+        <animate attributeName="opacity" values="0;1;1;0" dur="2s" begin="loop.begin+4s"/>
+      </rect>
+      <text class="num" x="14" y="24">03</text>
+      <text class="label" x="84" y="56">You review</text>
+      <text class="sub" x="84" y="80">approve unclear items</text>
+    </g>
+    <path class="arrow" d="M580 52h18m-7-7 7 7-7 7"/>
+    <g transform="translate(606)">
+      <rect class="box" width="168" height="104" rx="14"/>
+      <rect width="168" height="104" rx="14" fill="none" stroke="#f5c46b" stroke-width="3" opacity="0">
+        <animate attributeName="opacity" values="0;1;1;0" dur="2s" begin="loop.begin+6s"/>
+      </rect>
+      <text class="num" x="14" y="24">04</text>
+      <text class="label" x="84" y="56">Reconcile</text>
+      <text class="sub" x="84" y="80">debits = credits</text>
+    </g>
+    <path class="arrow" d="M782 52h18m-7-7 7 7-7 7"/>
+    <g transform="translate(808)">
+      <rect class="box" width="136" height="104" rx="14"/>
+      <rect width="136" height="104" rx="14" fill="none" stroke="#55c2a3" stroke-width="3" opacity="0">
+        <animate attributeName="opacity" values="0;1;1;0" dur="2s" begin="loop.begin+8s"/>
+      </rect>
+      <text class="num" x="14" y="24">05</text>
+      <text class="label" x="68" y="56">Draft</text>
+      <text class="sub" x="68" y="80">JSON · XLSX · PDF</text>
+    </g>
+
+    <!-- Plain-language caption that changes with the highlighted step -->
+    <g transform="translate(472 156)">
+      <text class="plain" opacity="0">Drop in the exports you already have.
+        <animate attributeName="opacity" values="0;1;1;0" dur="2s" begin="loop.begin"/></text>
+      <text class="plain" opacity="0">Every number remembers which file, page, and row it came from.
+        <animate attributeName="opacity" values="0;1;1;0" dur="2s" begin="loop.begin+2s"/></text>
+      <text class="plain" opacity="0">Nothing ambiguous is booked until a person says yes.
+        <animate attributeName="opacity" values="0;1;1;0" dur="2s" begin="loop.begin+4s"/></text>
+      <text class="plain" opacity="0">Bank balances and Stripe payouts must add up to the cent.
+        <animate attributeName="opacity" values="0;1;1;0" dur="2s" begin="loop.begin+6s"/></text>
+      <text class="plain" opacity="0">A draft for review. You still sign and file it yourself.
+        <animate attributeName="opacity" values="0;1;1;0" dur="2s" begin="loop.begin+8s"/></text>
+    </g>
+  </g>
+</svg>

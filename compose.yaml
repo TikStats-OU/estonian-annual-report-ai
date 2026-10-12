@@ -1,0 +1,29 @@
+services:
+  annual-report-mcp:
+    build: .
+    image: estonian-annual-report-ai:local
+    stdin_open: true
+    # No TTY: MCP speaks JSON over plain stdin/stdout, and a TTY would rewrite line endings.
+    tty: false
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      ESTONIAN_REPORT_COMPANY_NAME: ${ESTONIAN_REPORT_COMPANY_NAME:-Example Company OÜ}
+      ESTONIAN_REPORT_REGISTRY_CODE: ${ESTONIAN_REPORT_REGISTRY_CODE:-EXAMPLE-123}
+      ESTONIAN_REPORT_YEAR: ${ESTONIAN_REPORT_YEAR:-2025}
+      ESTONIAN_REPORT_PERIOD_START: ${ESTONIAN_REPORT_PERIOD_START:-2025-01-01}
+      ESTONIAN_REPORT_PERIOD_END: ${ESTONIAN_REPORT_PERIOD_END:-2025-12-31}
+      ESTONIAN_REPORT_DATA_DIR: /data
+    volumes:
+      - type: bind
+        source: ${ESTONIAN_REPORT_DATA_PATH:-./local-data}
+        target: /data
+      - type: bind
+        source: ${ESTONIAN_REPORT_INPUT_PATH:-./input}
+        target: /input
+        read_only: true

@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="260" viewBox="0 0 1000 260" role="img" aria-labelledby="title desc">
+  <title id="title">Your files stay on your computer</title>
+  <desc id="desc">Documents, the FlaiReport server, and the generated reports all sit inside a dashed boundary that represents your computer. Uploads to the internet are switched off; the optional AI helper only runs if you turn it on.</desc>
+  <defs>
+    <style>
+      .card { fill: #102235; stroke: #55c2a3; stroke-width: 2; }
+      .label { fill: #f3f7fa; font: 700 17px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .sub { fill: #8fa6b6; font: 13px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+      .zone { fill: #b9d7cc; font: 700 13px system-ui, -apple-system, "Segoe UI", sans-serif; letter-spacing: 1px; }
+      .off { fill: #8fa6b6; font: 600 14px system-ui, -apple-system, "Segoe UI", sans-serif; text-anchor: middle; }
+    </style>
+  </defs>
+  <rect width="1000" height="260" rx="22" fill="#081521"/>
+
+  <rect x="24" y="24" width="660" height="212" rx="18" fill="none" stroke="#55c2a3" stroke-width="2" stroke-dasharray="8 8">
+    <animate attributeName="stroke-dashoffset" from="0" to="-32" dur="1.6s" repeatCount="indefinite"/>
+  </rect>
+  <text class="zone" x="44" y="52">YOUR COMPUTER</text>
+
+  <g transform="translate(56 82)">
+    <rect class="card" width="160" height="96" rx="14"/><text class="label" x="80" y="44">Your files</text><text class="sub" x="80" y="68">read-only input</text>
+  </g>
+  <g transform="translate(274 82)">
+    <rect class="card" width="160" height="96" rx="14"/><text class="label" x="80" y="44">FlaiReport</text><text class="sub" x="80" y="68">local stdio server</text>
+  </g>
+  <g transform="translate(492 82)">
+    <rect class="card" width="160" height="96" rx="14"/><text class="label" x="80" y="44">Reports</text><text class="sub" x="80" y="68">owner-only files (600)</text>
+  </g>
+  <path d="M222 130h44M440 130h44" stroke="#2b4a5f" stroke-width="3" stroke-linecap="round"/>
+  <g fill="#f5c46b">
+    <circle r="5" cx="222" cy="130"><animate attributeName="cx" values="222;266" dur="1.4s" repeatCount="indefinite"/></circle>
+    <circle r="5" cx="440" cy="130"><animate attributeName="cx" values="440;484" dur="1.4s" begin=".7s" repeatCount="indefinite"/></circle>
+  </g>
+
+  <!-- Outside the boundary: internet upload is off, AI is opt-in -->
+  <g transform="translate(730 30)">
+    <path d="M40 62a26 26 0 0 1 4-51 34 34 0 0 1 64 8 22 22 0 0 1 4 43Z" fill="none" stroke="#5f7a8c" stroke-width="3"/>
+    <path d="M30 70 120 0" stroke="#ef7d7d" stroke-width="4" stroke-linecap="round">
+      <animate attributeName="stroke-opacity" values="1;.35;1" dur="2.4s" repeatCount="indefinite"/>
+    </path>
+    <text class="off" x="76" y="98">No upload</text>
+  </g>
+  <g transform="translate(730 166)">
+    <rect width="152" height="56" rx="14" fill="none" stroke="#5f7a8c" stroke-width="2" stroke-dasharray="4 5"/>
+    <text class="off" x="76" y="25">Optional AI helper</text>
+    <text class="sub" x="76" y="44">off unless you opt in</text>
+  </g>
+</svg>

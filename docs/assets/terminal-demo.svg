@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="400" viewBox="0 0 1000 400" role="img" aria-labelledby="title desc">
+  <title id="title">Example session with the MCP server</title>
+  <desc id="desc">A person asks an MCP client to import and reconcile a synthetic bank statement, then to draft the report. The draft is blocked until the prior-year equity is approved.</desc>
+  <defs>
+    <style>
+      .t { font: 500 16px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+      .you { fill: #f5c46b; }
+      .ask { fill: #f3f7fa; }
+      .tool { fill: #55c2a3; }
+      .out { fill: #a9bfce; }
+      .good { fill: #79d7b7; }
+      .warn { fill: #ef9a7d; }
+      .dim { fill: #5f7a8c; }
+      .bar { fill: #8fa6b6; font: 600 13px system-ui, -apple-system, "Segoe UI", sans-serif; }
+    </style>
+    <clipPath id="type1"><rect x="60" y="-30" width="0" height="60">
+      <set attributeName="width" to="0" begin="loop.begin"/>
+      <animate attributeName="width" dur="1.6s" begin="loop.begin+.8s" fill="freeze" calcMode="discrete" values="0;70;140;210;280;350;420;490;560" keyTimes="0;.125;.25;.375;.5;.625;.75;.875;1"/>
+    </rect></clipPath>
+    <clipPath id="type2"><rect x="60" y="-30" width="0" height="60">
+      <set attributeName="width" to="0" begin="loop.begin"/>
+      <animate attributeName="width" dur="1.2s" begin="loop.begin+6.2s" fill="freeze" calcMode="discrete" values="0;80;160;240;320;400" keyTimes="0;.2;.4;.6;.8;1"/>
+    </rect></clipPath>
+  </defs>
+  <rect width="1000" height="400" rx="18" fill="#0b1b2a"/>
+  <rect width="1000" height="40" rx="18" fill="#102235"/>
+  <rect y="22" width="1000" height="18" fill="#102235"/>
+  <circle cx="26" cy="20" r="6.5" fill="#ef7d7d"/><circle cx="48" cy="20" r="6.5" fill="#f5c46b"/><circle cx="70" cy="20" r="6.5" fill="#55c2a3"/>
+  <text class="bar" x="500" y="25" text-anchor="middle">MCP client · local stdio · synthetic data</text>
+
+  <!-- Master clock, 14 s per cycle -->
+  <rect width="1" height="1" fill="#081521" opacity="0"><animate id="loop" attributeName="x" values="0;0" dur="14s" begin="0s;loop.begin+14s"/></rect>
+
+  <g class="t" transform="translate(32 80)">
+    <text class="dim">$ estonian-annual-report-ai-mcp   # 33 tools, one company per process</text>
+
+    <g transform="translate(0 40)">
+      <text class="you">you ›</text>
+      <text class="ask" x="60" clip-path="url(#type1)">Import the synthetic bank statement and reconcile it.</text>
+    </g>
+
+    <g transform="translate(0 76)" opacity="0">
+      <set attributeName="opacity" to="1" begin="loop.begin+3s"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+      <text class="tool" x="20">● import_documents</text>
+      <text class="out" x="300">1 bank statement · 3 rows · EUR</text>
+    </g>
+    <g transform="translate(0 104)" opacity="0">
+      <set attributeName="opacity" to="1" begin="loop.begin+4.2s"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+      <text class="tool" x="20">● reconcile_accounts</text>
+      <text class="out" x="300">100.00 − 10.00 = 90.00</text>
+      <text class="good" x="540">✓ reconciled</text>
+    </g>
+
+    <g transform="translate(0 152)" opacity="0">
+      <set attributeName="opacity" to="1" begin="loop.begin+5.6s"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+      <text class="you">you ›</text>
+      <text class="ask" x="60" clip-path="url(#type2)">Draft the 2025 annual report.</text>
+    </g>
+
+    <g transform="translate(0 188)" opacity="0">
+      <set attributeName="opacity" to="1" begin="loop.begin+8s"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+      <text class="tool" x="20">● generate_annual_report</text>
+      <text class="warn" x="300">status: blocked</text>
+    </g>
+    <g transform="translate(0 216)" opacity="0">
+      <set attributeName="opacity" to="1" begin="loop.begin+8.8s"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+      <text class="out" x="40">↳ approve the 2024 closing equity before it opens 2025</text>
+    </g>
+    <g transform="translate(0 244)" opacity="0">
+      <set attributeName="opacity" to="1" begin="loop.begin+9.6s"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+      <text class="out" x="40">↳ saved annual-report-draft.json · .xlsx · .pdf</text>
+    </g>
+    <g transform="translate(0 284)" opacity="0">
+      <set attributeName="opacity" to="1" begin="loop.begin+10.6s"/><set attributeName="opacity" to="0" begin="loop.begin"/>
+      <text class="dim">Nothing left this computer. Nothing was booked without approval.</text>
+    </g>
+  </g>
+</svg>

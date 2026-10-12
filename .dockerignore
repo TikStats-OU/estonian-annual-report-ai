@@ -1,0 +1,15 @@
+.git
+.github
+.venv
+__pycache__
+*.py[cod]
+.pytest_cache
+.coverage
+.DS_Store
+.env
+.env.*
+local-data
+input
+outputs
+tests
+examples
