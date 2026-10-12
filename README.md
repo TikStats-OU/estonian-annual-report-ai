@@ -1,4 +1,8 @@
 <p align="center">
+  <a href="#connect-in-about-2-minutes"><img src="docs/assets/connect.svg" alt="Connect FlaiReport to Claude or Codex in about 2 minutes" width="100%"></a>
+</p>
+
+<p align="center">
   <img src="docs/assets/hero.svg" alt="FlaiReport: bank, Stripe, and invoice files flow into a balanced double-entry ledger" width="100%">
 </p>
 
@@ -26,6 +30,84 @@ invoice.pdf ─┘    trace    approve   Dr = Cr   to the cent   JSON · XLSX ·
 > FlaiReport prepares drafts for human review. It does not give legal or tax advice, and it never signs or files anything. You still review the draft and file it in the e-Business Register yourself.
 
 ---
+
+## Connect in about 2 minutes
+
+You need [uv](https://docs.astral.sh/uv/) once. It also downloads Python 3.12+ for you if your computer has an older one.
+
+```sh
+curl -LsSf https://astral.sh/uv/install.sh | sh        # macOS / Linux (or: brew install uv)
+```
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"   # Windows
+```
+
+**Step 1. Download and check (10–60 seconds the first time).**
+
+```sh
+uvx --from git+https://github.com/TikStats-OU/estonian-annual-report-ai estonian-annual-report-ai-mcp --check
+```
+
+You should see `FlaiReport … is ready: 33 MCP tools.` This also caches everything, so the client starts the server instantly later.
+
+**Step 2. Add it to your client.** Replace the company name, registry code, and year with your own.
+
+<details open>
+<summary><b>Claude Code</b></summary>
+
+```sh
+claude mcp add flaireport --scope user \
+  -e ESTONIAN_REPORT_COMPANY_NAME="Your Company OÜ" \
+  -e ESTONIAN_REPORT_REGISTRY_CODE=12345678 \
+  -e ESTONIAN_REPORT_YEAR=2025 \
+  -- uvx --from git+https://github.com/TikStats-OU/estonian-annual-report-ai estonian-annual-report-ai-mcp
+```
+
+Check with `claude mcp list`; it should show `flaireport … ✔ Connected`.
+</details>
+
+<details open>
+<summary><b>Codex</b> (CLI, IDE extension, and app share one config)</summary>
+
+```sh
+codex mcp add flaireport \
+  --env ESTONIAN_REPORT_COMPANY_NAME="Your Company OÜ" \
+  --env ESTONIAN_REPORT_REGISTRY_CODE=12345678 \
+  --env ESTONIAN_REPORT_YEAR=2025 \
+  -- uvx --from git+https://github.com/TikStats-OU/estonian-annual-report-ai estonian-annual-report-ai-mcp
+```
+
+Check with `codex mcp list`. If you skipped step 1 and the first start times out, add `startup_timeout_sec = 60` under `[mcp_servers.flaireport]` in `~/.codex/config.toml`.
+</details>
+
+<details>
+<summary><b>Claude Desktop</b></summary>
+
+Open **Settings → Developer → Edit Config** and add the server to `claude_desktop_config.json`. Desktop apps do not always see your shell `PATH`, so use the full path that `which uvx` prints (on Windows: `where uvx`).
+
+```json
+{
+  "mcpServers": {
+    "flaireport": {
+      "command": "/full/path/to/uvx",
+      "args": ["--from", "git+https://github.com/TikStats-OU/estonian-annual-report-ai", "estonian-annual-report-ai-mcp"],
+      "env": {
+        "ESTONIAN_REPORT_COMPANY_NAME": "Your Company OÜ",
+        "ESTONIAN_REPORT_REGISTRY_CODE": "12345678",
+        "ESTONIAN_REPORT_YEAR": "2025"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop afterwards.
+</details>
+
+**Step 3. Try it.** Ask your client: *"Use FlaiReport to tell me which documents you need for the annual report."*
+
+Other MCP clients, Docker, `pipx`, and installing from a clone are covered in [docs/mcp-clients.md](docs/mcp-clients.md). Data is stored in `~/.local/share/estonian-annual-report-ai/data` unless you set `ESTONIAN_REPORT_DATA_DIR`.
 
 ## In plain words
 
@@ -74,52 +156,6 @@ Every transaction is recorded twice: once where the money went (debit) and once 
 ```
 
 All money is handled as `Decimal` and stored in cents. There is no floating-point arithmetic anywhere in the accounting engine.
-
-## Quick start
-
-Requires Python 3.12 or newer. The quickest route needs no clone at all: let your MCP client start the server through [uv](https://docs.astral.sh/uv/).
-
-```json
-{
-  "mcpServers": {
-    "annual-report": {
-      "command": "uvx",
-      "args": ["--from", "git+https://github.com/TikStats-OU/estonian-annual-report-ai", "estonian-annual-report-ai-mcp"],
-      "env": {
-        "ESTONIAN_REPORT_COMPANY_NAME": "Example Company OÜ",
-        "ESTONIAN_REPORT_REGISTRY_CODE": "EXAMPLE-123",
-        "ESTONIAN_REPORT_YEAR": "2025"
-      }
-    }
-  }
-}
-```
-
-Or install the command yourself:
-
-```sh
-pipx install git+https://github.com/TikStats-OU/estonian-annual-report-ai
-# or, from a clone:
-git clone https://github.com/TikStats-OU/estonian-annual-report-ai.git
-cd estonian-annual-report-ai
-python3.12 -m venv .venv && . .venv/bin/activate
-python -m pip install -e .
-```
-
-Configure one company per process (synthetic values shown):
-
-```sh
-export ESTONIAN_REPORT_COMPANY_NAME='Example Company OÜ'
-export ESTONIAN_REPORT_REGISTRY_CODE='EXAMPLE-123'
-export ESTONIAN_REPORT_YEAR='2025'
-export ESTONIAN_REPORT_DATA_DIR="$HOME/.local/share/estonian-annual-report-ai/data"
-```
-
-Then register the `estonian-annual-report-ai-mcp` command in your MCP client. Step-by-step setup for command-line and desktop clients, and for Docker, is in [docs/mcp-clients.md](docs/mcp-clients.md). To try the accounting engine without any client:
-
-```sh
-python -m examples.synthetic_demo
-```
 
 ## What a session looks like
 
@@ -221,7 +257,11 @@ The container runs as a non-root user with a read-only root filesystem, no publi
 ## Development
 
 ```sh
+git clone https://github.com/TikStats-OU/estonian-annual-report-ai.git
+cd estonian-annual-report-ai
+python3.12 -m venv .venv && . .venv/bin/activate
 python -m pip install -e ".[dev]"
+python -m examples.synthetic_demo        # the accounting engine without any MCP client
 python -m unittest discover -s tests -v
 ruff check src mcp tests examples scripts
 python scripts/check_privacy.py

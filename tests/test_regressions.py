@@ -201,5 +201,36 @@ class DraftExportTests(unittest.TestCase):
         self.assertIn("FINAL-MARKER.", text)
 
 
+class CommandLineTests(unittest.TestCase):
+    def _run(self, *args: str, **env: str):
+        import os
+        import subprocess
+        import sys
+
+        return subprocess.run(
+            [sys.executable, "-m", "estonian_annual_report_ai.mcp_server", *args],
+            capture_output=True, text=True, timeout=60, check=False,
+            env={**os.environ, **env},
+        )
+
+    def test_check_reports_tools_and_configuration_then_exits(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            result = self._run(
+                "--check",
+                ESTONIAN_REPORT_DATA_DIR=temporary,
+                ESTONIAN_REPORT_REGISTRY_CODE="EXAMPLE-123",
+                ESTONIAN_REPORT_YEAR="2025",
+            )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("33 MCP tools", result.stdout)
+        self.assertIn("2025-01-01 to 2025-12-31", result.stdout)
+
+    def test_check_rejects_a_malformed_year(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            result = self._run("--check", ESTONIAN_REPORT_DATA_DIR=temporary, ESTONIAN_REPORT_YEAR="next")
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("four-digit year", result.stderr)
+
+
 if __name__ == "__main__":
     unittest.main()

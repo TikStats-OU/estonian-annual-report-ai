@@ -1,10 +1,14 @@
 """Local stdio MCP adapter over the document and accounting workflow."""
 
+import argparse
+import asyncio
 import os
 import re
+import sys
 import threading
 from datetime import date
 from decimal import Decimal
+from importlib import metadata
 from pathlib import Path
 
 from pydantic import BaseModel, Field
@@ -68,7 +72,11 @@ def _configured_workflow() -> AccountingWorkflow:
         if _workflow_instance is None:
             name = os.environ.get("ESTONIAN_REPORT_COMPANY_NAME", "Example Company OÜ")
             registry_code = os.environ.get("ESTONIAN_REPORT_REGISTRY_CODE", "EXAMPLE")
-            year = int(os.environ.get("ESTONIAN_REPORT_YEAR", str(date.today().year)))
+            # Annual reports cover a finished year, so default to the previous calendar year.
+            raw_year = os.environ.get("ESTONIAN_REPORT_YEAR", str(date.today().year - 1))
+            if not re.fullmatch(r"\d{4}", raw_year.strip()):
+                raise ValueError("ESTONIAN_REPORT_YEAR must be a four-digit year, for example 2025.")
+            year = int(raw_year)
             period_start = date.fromisoformat(os.environ.get("ESTONIAN_REPORT_PERIOD_START", f"{year}-01-01"))
             period_end = date.fromisoformat(os.environ.get("ESTONIAN_REPORT_PERIOD_END", f"{year}-12-31"))
             if period_end < period_start:
@@ -748,8 +756,46 @@ def generate_annual_report() -> dict[str, object]:
         }
 
 
-def main() -> None:
-    """Run the configured local stdio MCP server."""
+def _check() -> int:
+    """Validate the configuration without starting the stdio server.
+
+    Also useful right after installation: running it once downloads and
+    caches everything, so the first MCP client start is fast.
+    """
+    workflow = _configured_workflow()
+    tool_count = len(asyncio.run(mcp.list_tools()))
+    print(f"FlaiReport {_package_version()} is ready: {tool_count} MCP tools.")
+    print(f"Company: {workflow.company_name} ({workflow.registry_code})")
+    print(f"Period: {workflow.period_start.isoformat()} to {workflow.period_end.isoformat()}")
+    print(f"Data directory: {_company_workspace(workflow.registry_code)}")
+    return 0
+
+
+def _package_version() -> str:
+    try:
+        return metadata.version("estonian-annual-report-ai")
+    except metadata.PackageNotFoundError:
+        return "source checkout"
+
+
+def main(argv: list[str] | None = None) -> None:
+    """Run the configured local stdio MCP server, or a one-off check."""
+    parser = argparse.ArgumentParser(
+        prog="estonian-annual-report-ai-mcp",
+        description="FlaiReport local MCP server. Without options it speaks MCP over stdin/stdout.",
+    )
+    parser.add_argument("--version", action="store_true", help="print the version and exit")
+    parser.add_argument("--check", action="store_true", help="validate the configuration, print a summary, and exit")
+    options = parser.parse_args(argv)
+    if options.version:
+        print(_package_version())
+        return
+    if options.check:
+        try:
+            raise SystemExit(_check())
+        except ValueError as exc:
+            print(f"Configuration error: {exc}", file=sys.stderr)
+            raise SystemExit(2) from exc
     mcp.run()
 
 
